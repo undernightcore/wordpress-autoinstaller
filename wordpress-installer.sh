@@ -30,7 +30,7 @@ function check_installed {
 }
 
 function installer {
-    apt install -y $1 &> /dev/null
+    apt-get install -y $1 &> /dev/null
     if [ $? -ne 0 ]
     then
         echo "ERROR: Couldn't install $1"
@@ -45,6 +45,8 @@ function install_dependencies {
     #Programs to install
     programs=(apache2 php php-mysql libapache2-mod-php php-cli php-cgi php-gd mariadb-server mariadb-client)
     #Install
+    echo "INFO: Updating repositories..."
+    apt-get update &> /dev/null
     for program in $programs
     do
         check_installed $program
@@ -55,6 +57,7 @@ function install_dependencies {
             echo "OK: $program is already installed. Skipping..."
         fi
     done
+    echo "OK: All services installed!"
 }
 
 function check_apache {
@@ -87,8 +90,97 @@ function check_apache {
     echo "OK: Apache2 directory is ready!"
 }
 
+function setup_mariadb {
+    echo "INFO: Configuring MariaDB..."
+    #Ask password
+    echo -n "IMPORTANT: Please, set a password for MySQL user"
+    read MYSQL_PASSWORD
+    #Script for mysql_secure_installation
+    mysql -u root -e "UPDATE mysql.user SET Password=PASSWORD('$MYSQL_PASSWORD') WHERE User='root'"
+    mysql -u root -p${MYSQL_PASSWORD} -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1')"
+    mysql -u root -p${MYSQL_PASSWORD} -e "DELETE FROM mysql.user WHERE User=''"
+    mysql -u root -p${MYSQL_PASSWORD} -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\_%'"
+    mysql -u root -p${MYSQL_PASSWORD} -e "FLUSH PRIVILEGES"
+    #Creating users and databases
+    mysql -u root -p${MYSQL_PASSWORD} -e "CREATE DATABASE wordpress"
+    mysql -u root -p${MYSQL_PASSWORD} -e "CREATE USER wordpress@localhost IDENTIFIED BY '$MYSQL_PASSWORD'"
+    mysql -u root -p${MYSQL_PASSWORD} -e "GRANT ALL PERMISIONS ON wordpress.* TO wordpress@localhost"
+    mysql -u root -p${MYSQL_PASSWORD} -e "FLUSH PRIVILEGES"
+    echo "OK: MariaDB configured!"
+}
+
+function setup_wordpress {
+    echo "INFO: Installing wordpress..."
+    while true
+            do
+                echo "IMPORTANT: Choose you language (en/es): "
+                read choice2
+                case $choice2 in
+                    En | en)
+                    echo "INFO: Installing English version ..."
+                    wget https://wordpress.org/latest.tar.gz -o /var/www/html/latest.tar.gz
+                    tar -C /var/www/html/ -zxvf /var/www/html/latest.tar.gz
+                    rm /var/www/html/latest.tar.gz
+                    cp -r /var/www/html/wordpress/* /var/www/html/
+                    rm -r /var/www/html/wordpress
+                    mv /var/www/html/wp-config-sample.php /var/www/html/wp-config.php
+                    sed -i "" "s/database_name_here/wordpress/g" wp-config.php
+                    sed -i "" "s/username_here/wordpress/g" wp-config.php
+                    sed -i "" "s/password_here/${MYSQL_PASSWORD}/g" wp-config.php
+                    break
+                    ;;
+                    Es | es)
+                    echo "INFO: Installing Spanish version ..."
+                    wget https://es.wordpress.org/latest-es_ES.tar.gz -o /var/www/html/latest.tar.gz
+                    tar -C /var/www/html/ -zxvf /var/www/html/latest.tar.gz
+                    rm /var/www/html/latest.tar.gz
+                    cp -r /var/www/html/wordpress/* /var/www/html/
+                    rm -r /var/www/html/wordpress
+                    mv /var/www/html/wp-config-sample.php /var/www/html/wp-config.php
+                    sed -i "" "s/nombredetubasededatos/wordpress/g" wp-config.php
+                    sed -i "" "s/nombredetubasededatos/wordpress/g" wp-config.php
+                    sed -i "" "s/contraseña/${MYSQL_PASSWORD}/g" wp-config.php
+                    break
+                    ;;
+                    *)
+                    echo "ERROR: Please, choose a valid option..."
+                    ;;
+                esac
+            done
+    chown -R www-data:www-data /var/www/html
+    echo "OK: Wordpress installed!"
+}
+
+function start {
+    base64 <<<"IF9fICAgICAgX18gICAgICAgICAgXyAgICAgICAgICAgICAgICAgICAgICBfX18gICAgICAgICBfICAgICAgICBfIF8gICAgICAgICAKIFwgXCAgICAvIC9fXyBfIF8gX198IHxfIF9fIF8gXyBfX18gX19fX19fIHxfIF98XyBfICBfX3wgfF8gX18gX3wgfCB8X19fIF8gXyAKICBcIFwvXC8gLyBfIFwgJ18vIF9gIHwgJ18gXCAnXy8gLV98Xy08Xy08ICB8IHx8ICcgXChfLTwgIF8vIF9gIHwgfCAvIC1fKSAnX3wKICAgXF8vXF8vXF9fXy9ffCBcX18sX3wgLl9fL198IFxfX18vX18vX18vIHxfX198X3x8Xy9fXy9cX19cX18sX3xffF9cX19ffF98ICAKICAgICAgICAgICAgICAgICAgICAgIHxffCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKCkJ5IEphdmllciBNYXJ0w60gVmFsY8OhcmNlbAotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCklNUE9SVEFOVDogQSBjbGVhbiB1YnVudHUvZGViaWFuIGluc3RhbGxhdGlvbiBpcyByZWNvbW1lbmRlZC4KSU5GTzogRG8geW91IHdhbnQgdG8gc3RhcnQgdGhlIGluc3RhbGxhdGlvbiBub3c/IChZL04pOiA="
+    read install_ready
+    case install_ready in
+        y | Y)
+            echo "INFO: Starting now..."
+            ;;
+        n | N)
+            echo "INFO: Exiting..."
+            exit 1
+            ;;
+        *)
+            echo "ERROR: Please, choose a valid option..."
+            exit1
+            ;;
+    esac
+}
+
+
+function finishing {
+    echo "DONE: It seams that everything just went fine! Please, try to connect via localhost or your local IP address. Thanks!"
+    exit 0
+}
+
 #HERE THE SCRIPT ACTUALLY STARTS
-check_root()
-check_connectivity()
-install_dependencies()
-check_apache()
+start
+check_root
+check_connectivity
+install_dependencies
+check_apache
+setup_mariadb
+setup_wordpress
+finishing
