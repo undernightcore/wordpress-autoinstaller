@@ -111,42 +111,15 @@ function setup_mariadb {
 
 function setup_wordpress {
     echo "INFO: Installing wordpress..."
-    while true
-            do
-                echo "IMPORTANT: Choose you language (en/es): "
-                read choice2
-                case $choice2 in
-                    En | en)
-                    echo "INFO: Installing English version ..."
-                    wget -q https://wordpress.org/latest.tar.gz -O /var/www/html/latest.tar.gz
-                    tar -C /var/www/html/ -zxvf /var/www/html/latest.tar.gz
-                    rm /var/www/html/latest.tar.gz
-                    cp -r /var/www/html/wordpress/* /var/www/html/
-                    rm -r /var/www/html/wordpress
-                    mv /var/www/html/wp-config-sample.php /var/www/html/wp-config.php
-                    sed -i "s/database_name_here/wordpress/g" /var/www/html/wp-config.php
-                    sed -i "s/username_here/wordpress/g" /var/www/html/wp-config.php
-                    sed -i "s/password_here/${MYSQL_PASSWORD}/g" /var/www/html/wp-config.php
-                    break
-                    ;;
-                    Es | es)
-                    echo "INFO: Installing Spanish version ..."
-                    wget -q https://es.wordpress.org/latest-es_ES.tar.gz -O /var/www/html/latest.tar.gz
-                    tar -C /var/www/html/ -zxvf /var/www/html/latest.tar.gz
-                    rm /var/www/html/latest.tar.gz
-                    cp -r /var/www/html/wordpress/* /var/www/html/
-                    rm -r /var/www/html/wordpress
-                    mv /var/www/html/wp-config-sample.php /var/www/html/wp-config.php
-                    sed -i "s/nombredetubasededatos/wordpress/g" /var/www/html/wp-config.php
-                    sed -i "s/nombredetubasededatos/wordpress/g" /var/www/html/wp-config.php
-                    sed -i "s/contraseña/${MYSQL_PASSWORD}/g" /var/www/html/wp-config.php
-                    break
-                    ;;
-                    *)
-                    echo "ERROR: Please, choose a valid option..."
-                    ;;
-                esac
-            done
+    wget -q https://wordpress.org/latest.tar.gz -O /var/www/html/latest.tar.gz
+    tar -C /var/www/html/ -zxvf /var/www/html/latest.tar.gz
+    rm /var/www/html/latest.tar.gz
+    cp -r /var/www/html/wordpress/* /var/www/html/
+    rm -r /var/www/html/wordpress
+    mv /var/www/html/wp-config-sample.php /var/www/html/wp-config.php
+    sed -i "s/database_name_here/wordpress/g" /var/www/html/wp-config.php
+    sed -i "s/username_here/wordpress/g" /var/www/html/wp-config.php
+    sed -i "s/password_here/${MYSQL_PASSWORD}/g" /var/www/html/wp-config.php
     chown -R www-data:www-data /var/www/html
     echo "OK: Wordpress installed!"
 }
