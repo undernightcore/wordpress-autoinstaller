@@ -1,4 +1,4 @@
-# Wordpress Installer
+# Wordpress Autoinstaller
 Full automatic Wordpress installer for Debian based systems. Fully built in Bash!
 ## Screenshots
 --------------
