@@ -149,6 +149,7 @@ function finishing {
 }
 
 #HERE THE SCRIPT ACTUALLY STARTS
+clear
 start
 check_root
 check_connectivity
