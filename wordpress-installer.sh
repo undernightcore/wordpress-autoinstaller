@@ -171,7 +171,7 @@ function start {
 
 
 function finishing {
-    echo "DONE: It seams that everything just went fine! Please, try to connect via localhost or your local IP address. Thanks!"
+    echo "DONE: It seems that everything just went fine! Please, try to connect via localhost or your local IP address. Thanks!"
     exit 0
 }
 
