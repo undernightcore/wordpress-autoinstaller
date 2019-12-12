@@ -47,7 +47,7 @@ function install_dependencies {
     #Install
     echo "INFO: Updating repositories..."
     apt-get update &> /dev/null
-    for program in $programs
+    for program in ${programs[@]}
     do
         check_installed $program
         if [ $? -ne 0 ]
@@ -62,7 +62,7 @@ function install_dependencies {
 
 function check_apache {
     echo "INFO: Checking apache2..."
-    if [ $(ls -a | wc -l) -ne 3 ]
+    if [ $(ls -a /var/www/html | wc -l) -ne 3 ]
     then
         while true
         do
@@ -72,7 +72,7 @@ function check_apache {
             case $choice in
                 y | Y)
                 echo "INFO: Removing all data from /var/www/html ..."
-                rm -r /var/www/html/*
+                rm -r /var/www/html/* &> /dev/null
                 break
                 ;;
                 n | N)
@@ -85,7 +85,7 @@ function check_apache {
             esac
         done
     else
-        rm -r /var/www/html/*
+        rm -r /var/www/html/* &> /dev/null
     fi
     echo "OK: Apache2 directory is ready!"
 }
@@ -104,7 +104,7 @@ function setup_mariadb {
     #Creating users and databases
     mysql -u root -p${MYSQL_PASSWORD} -e "CREATE DATABASE wordpress"
     mysql -u root -p${MYSQL_PASSWORD} -e "CREATE USER wordpress@localhost IDENTIFIED BY '$MYSQL_PASSWORD'"
-    mysql -u root -p${MYSQL_PASSWORD} -e "GRANT ALL PERMISIONS ON wordpress.* TO wordpress@localhost"
+    mysql -u root -p${MYSQL_PASSWORD} -e "GRANT ALL PRIVILEGES ON wordpress.* TO wordpress@localhost"
     mysql -u root -p${MYSQL_PASSWORD} -e "FLUSH PRIVILEGES"
     echo "OK: MariaDB configured!"
 }
@@ -118,7 +118,7 @@ function setup_wordpress {
                 case $choice2 in
                     En | en)
                     echo "INFO: Installing English version ..."
-                    wget https://wordpress.org/latest.tar.gz -o /var/www/html/latest.tar.gz
+                    wget https://wordpress.org/latest.tar.gz -O /var/www/html/latest.tar.gz
                     tar -C /var/www/html/ -zxvf /var/www/html/latest.tar.gz
                     rm /var/www/html/latest.tar.gz
                     cp -r /var/www/html/wordpress/* /var/www/html/
@@ -131,7 +131,7 @@ function setup_wordpress {
                     ;;
                     Es | es)
                     echo "INFO: Installing Spanish version ..."
-                    wget https://es.wordpress.org/latest-es_ES.tar.gz -o /var/www/html/latest.tar.gz
+                    wget https://es.wordpress.org/latest-es_ES.tar.gz -O /var/www/html/latest.tar.gz
                     tar -C /var/www/html/ -zxvf /var/www/html/latest.tar.gz
                     rm /var/www/html/latest.tar.gz
                     cp -r /var/www/html/wordpress/* /var/www/html/
