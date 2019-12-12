@@ -124,9 +124,9 @@ function setup_wordpress {
                     cp -r /var/www/html/wordpress/* /var/www/html/
                     rm -r /var/www/html/wordpress
                     mv /var/www/html/wp-config-sample.php /var/www/html/wp-config.php
-                    sed -i "" "s/database_name_here/wordpress/g" wp-config.php
-                    sed -i "" "s/username_here/wordpress/g" wp-config.php
-                    sed -i "" "s/password_here/${MYSQL_PASSWORD}/g" wp-config.php
+                    sed -i "s/database_name_here/wordpress/g" /var/www/html/wp-config.php
+                    sed -i "s/username_here/wordpress/g" /var/www/html/wp-config.php
+                    sed -i "s/password_here/${MYSQL_PASSWORD}/g" /var/www/html/wp-config.php
                     break
                     ;;
                     Es | es)
@@ -137,9 +137,9 @@ function setup_wordpress {
                     cp -r /var/www/html/wordpress/* /var/www/html/
                     rm -r /var/www/html/wordpress
                     mv /var/www/html/wp-config-sample.php /var/www/html/wp-config.php
-                    sed -i "" "s/nombredetubasededatos/wordpress/g" wp-config.php
-                    sed -i "" "s/nombredetubasededatos/wordpress/g" wp-config.php
-                    sed -i "" "s/contraseña/${MYSQL_PASSWORD}/g" wp-config.php
+                    sed -i "s/nombredetubasededatos/wordpress/g" /var/www/html/wp-config.php
+                    sed -i "s/nombredetubasededatos/wordpress/g" /var/www/html/wp-config.php
+                    sed -i "s/contraseña/${MYSQL_PASSWORD}/g" /var/www/html/wp-config.php
                     break
                     ;;
                     *)
