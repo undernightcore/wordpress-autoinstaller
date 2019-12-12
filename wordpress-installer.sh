@@ -86,3 +86,9 @@ function check_apache {
     fi
     echo "OK: Apache2 directory is ready!"
 }
+
+#HERE THE SCRIPT ACTUALLY STARTS
+check_root()
+check_connectivity()
+install_dependencies()
+check_apache()
