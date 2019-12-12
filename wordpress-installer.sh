@@ -93,7 +93,7 @@ function check_apache {
 function setup_mariadb {
     echo "INFO: Configuring MariaDB..."
     #Ask password
-    echo -n "IMPORTANT: Please, set a password for MySQL user"
+    echo -n "IMPORTANT: Please, set a password for MySQL user: "
     read MYSQL_PASSWORD
     #Script for mysql_secure_installation
     mysql -u root -e "UPDATE mysql.user SET Password=PASSWORD('$MYSQL_PASSWORD') WHERE User='root'"
@@ -118,7 +118,7 @@ function setup_wordpress {
                 case $choice2 in
                     En | en)
                     echo "INFO: Installing English version ..."
-                    wget https://wordpress.org/latest.tar.gz -O /var/www/html/latest.tar.gz
+                    wget -q https://wordpress.org/latest.tar.gz -O /var/www/html/latest.tar.gz
                     tar -C /var/www/html/ -zxvf /var/www/html/latest.tar.gz
                     rm /var/www/html/latest.tar.gz
                     cp -r /var/www/html/wordpress/* /var/www/html/
@@ -131,7 +131,7 @@ function setup_wordpress {
                     ;;
                     Es | es)
                     echo "INFO: Installing Spanish version ..."
-                    wget https://es.wordpress.org/latest-es_ES.tar.gz -O /var/www/html/latest.tar.gz
+                    wget -q https://es.wordpress.org/latest-es_ES.tar.gz -O /var/www/html/latest.tar.gz
                     tar -C /var/www/html/ -zxvf /var/www/html/latest.tar.gz
                     rm /var/www/html/latest.tar.gz
                     cp -r /var/www/html/wordpress/* /var/www/html/
