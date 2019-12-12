@@ -112,7 +112,7 @@ function setup_mariadb {
 function setup_wordpress {
     echo "INFO: Installing wordpress..."
     wget -q https://wordpress.org/latest.tar.gz -O /var/www/html/latest.tar.gz
-    tar -C /var/www/html/ -zxvf /var/www/html/latest.tar.gz
+    tar -C /var/www/html/ -zxvf /var/www/html/latest.tar.gz &> /dev/null
     rm /var/www/html/latest.tar.gz
     cp -r /var/www/html/wordpress/* /var/www/html/
     rm -r /var/www/html/wordpress
