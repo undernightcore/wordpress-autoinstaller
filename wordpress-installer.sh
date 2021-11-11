@@ -144,6 +144,7 @@ function start {
 
 
 function finishing {
+    service apache2 restart
     echo "DONE: It seems that everything just went fine! Please, try to connect via localhost or your local IP address. Thanks!"
     exit 0
 }
